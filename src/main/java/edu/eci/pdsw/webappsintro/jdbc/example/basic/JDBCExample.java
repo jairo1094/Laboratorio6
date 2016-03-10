@@ -34,10 +34,10 @@ public class JDBCExample {
     
     public static void main(String args[]){
         try {
-            String url="jdbc:mysql://HOST:3306/BD";
+            String url="jdbc:mysql://desarrollo.is.escuelaing.edu.co:3306/bdprueba";
             String driver="com.mysql.jdbc.Driver";
-            String user="USER";
-            String pwd="PWD";
+            String user="bdprueba";
+            String pwd="bdprueba";
                         
             Class.forName(driver);
             Connection con=DriverManager.getConnection(url,user,pwd);
@@ -57,8 +57,8 @@ public class JDBCExample {
             System.out.println("-----------------------");
             
             
-            int suCodigoECI=20134423;
-            registrarNuevoProducto(con, suCodigoECI, "SU NOMBRE", 99999999);            
+            int suCodigoECI=2103021;
+            registrarNuevoProducto(con, suCodigoECI, "Lamborghini", 1000000000);            
             con.commit();
             
             cambiarNombreProducto(con, suCodigoECI, "EL NUEVO NOMBRE");
@@ -83,8 +83,23 @@ public class JDBCExample {
      * @throws SQLException 
      */
     public static void registrarNuevoProducto(Connection con, int codigo, String nombre,int precio) throws SQLException{
-        //Crear preparedStatement
-        //Asignar parámetros
+        
+        PreparedStatement registrarProducto= null;
+        String nProducto = "INSERT INTO ORD_PRODUCTOS VALUES (?,?,?)";
+        try{
+            con.setAutoCommit(false);
+
+            registrarProducto = con.prepareStatement(nProducto);
+            registrarProducto.setInt(1, codigo);
+            registrarProducto.setString(2, nombre);
+            registrarProducto.setInt(3, precio);
+            registrarProducto.executeUpdate();
+            
+            con.commit();
+        }catch(SQLException e){
+            e.printStackTrace();
+            System.out.println("No se pudo hacer la insercion");
+        }
         //usar 'execute'
 
         
