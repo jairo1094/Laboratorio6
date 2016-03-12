@@ -44,9 +44,9 @@ public class JDBCExample {
             con.setAutoCommit(false);
                  
             
-            System.out.println("Valor total pedido 1:"+valorTotalPedido(con, 1));
+            System.out.println("Valor total pedido 102103021: "+valorTotalPedido(con, 102103021));
             
-            List<String> prodsPedido=nombresProductosPedido(con, 1);
+            List<String> prodsPedido=nombresProductosPedido(con, 102103021);
             
             
             System.out.println("Productos del pedido 1:");
@@ -116,11 +116,22 @@ public class JDBCExample {
     public static List<String> nombresProductosPedido(Connection con, int codigoPedido){
         List<String> np=new LinkedList<>();
         
-        //Crear prepared statement
-        //asignar parámetros
-        //usar executeQuery
-        //Sacar resultados del ResultSet
-        //Llenar la lista y retornarla
+        PreparedStatement nProdutosPedidos = null;
+        String codPedido = "SELECT prod.nombre FROM ORD_PEDIDOS ped INNER JOIN ORD_DETALLES_PEDIDO det ON ped.codigo = det.pedido_fk INNER JOIN ORD_PRODUCTOS prod ON prod.codigo = det.producto_fk WHERE ped.codigo = ?";
+        try{
+            con.setAutoCommit(false);
+            nProdutosPedidos = con.prepareStatement(codPedido);
+            nProdutosPedidos.setInt(1, codigoPedido);
+            ResultSet executeQuery = nProdutosPedidos.executeQuery();
+            con.commit();
+            while (executeQuery.next()){
+                np.add(executeQuery.getString("nombre"));
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            System.out.println("No se pudo obtener datos");
+            
+        }
         
         return np;
     }
@@ -133,13 +144,25 @@ public class JDBCExample {
      * @return el costo total del pedido (suma de: cantidades*precios)
      */
     public static int valorTotalPedido(Connection con, int codigoPedido){
-        
-        //Crear prepared statement
-        //asignar parámetros
-        //usar executeQuery
+        int suma = 0;
+        PreparedStatement valorTotal = null;
+        String consul = "SELECT SUM(prod.precio) suma FROM ORD_PEDIDOS ped INNER JOIN ORD_DETALLES_PEDIDO det ON ped.codigo = det.pedido_fk INNER JOIN ORD_PRODUCTOS prod ON prod.codigo = det.producto_fk WHERE ped.codigo = ?";
+        try{
+            con.setAutoCommit(false);
+            valorTotal = con.prepareStatement(consul);
+            valorTotal.setInt(1, codigoPedido);
+            ResultSet executeQuery = valorTotal.executeQuery();
+            con.commit();
+            executeQuery.next();
+            suma = executeQuery.getInt("suma");
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+            System.out.println("No se pudo obtener los datos de la consulta");
+        }
         //Sacar resultado del ResultSet
         
-        return 0;
+        return suma;
     }
     
 
