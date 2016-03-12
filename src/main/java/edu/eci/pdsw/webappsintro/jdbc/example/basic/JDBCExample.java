@@ -160,7 +160,6 @@ public class JDBCExample {
             e.printStackTrace();
             System.out.println("No se pudo obtener los datos de la consulta");
         }
-        //Sacar resultado del ResultSet
         
         return suma;
     }
