@@ -61,7 +61,7 @@ public class JDBCExample {
             registrarNuevoProducto(con, suCodigoECI, "Lamborghini", 1000000000);            
             con.commit();
             
-            cambiarNombreProducto(con, suCodigoECI, "EL NUEVO NOMBRE");
+            cambiarNombreProducto(con, suCodigoECI, "jaguar");
             con.commit();
             
             
@@ -172,8 +172,23 @@ public class JDBCExample {
      * @param nuevoNombre el nuevo nombre a ser asignado
      */
     public static void cambiarNombreProducto(Connection con, int codigoProducto, 
-            String nuevoNombre){
-        
+            String nuevoNombre) throws SQLException{
+        PreparedStatement nuevonombre = null;
+        String update = "UPDATE ORD_PRODUCTOS SET nombre = ? WHERE codigo=?";
+        try{
+            con.setAutoCommit(false);
+
+            nuevonombre = con.prepareStatement(update);
+            nuevonombre.setString(1, nuevoNombre);
+            nuevonombre.setInt(2, codigoProducto);            
+            nuevonombre.executeUpdate();
+            
+            con.commit();
+        }catch(SQLException e){
+            e.printStackTrace();
+            System.out.println("No se pudo modificar el nombre del producto");
+        }
+        con.commit();
         //Crear prepared statement
         //asignar parámetros
         //usar executeUpdate
